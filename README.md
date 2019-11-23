@@ -1,0 +1,1 @@
+assertj-mockito is a library integrating mockito with assertj's soft assertions.

@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group 'org.assertj'
+version '1.0-SNAPSHOT'
+
+compileJava   {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'junit:junit:4.12'
+    compile 'org.assertj:assertj-core:3.14.0'
+    compile 'org.mockito:mockito-core:3.1.0'
+    compile 'org.opentest4j:opentest4j:1.2.0'
+}
+
+test {
+    exclude 'org/example/tested/**'
+}
