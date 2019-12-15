@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.8.4'
+}
+
+apply from: "$rootProject.projectDir/gradle/script/common.gradle"
+
+dependencies {
+    compile "org.junit.jupiter:junit-jupiter-api:$junit5_version"
+    compile "org.junit.jupiter:junit-jupiter-engine:$junit5_version"
+    compile "org.junit.jupiter:junit-jupiter-params:$junit5_version"
+    compile "org.junit.platform:junit-platform-launcher:1.5.2"
+    compile "org.mockito:mockito-junit-jupiter:3.2.4"
+
+    implementation project(':assertj-mockito-core')
+}
+
+test {
+    useJUnitPlatform()
+}
