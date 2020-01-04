@@ -1,2 +1,5 @@
 rootProject.name = 'assertj-mockito'
+include 'assertj-mockito-junit4'
+include 'assertj-mockito-junit5'
+include 'assertj-mockito-core'
 

@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.8.4'
+}
+
+apply from: "$rootProject.projectDir/gradle/script/common.gradle"
+
+dependencies {
+    compile "junit:junit:$junit4_version"
+
+    implementation project(':assertj-mockito-core')
+    testImplementation project(':assertj-mockito-core')
+}
