@@ -4,6 +4,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.assertj.core.error.AssertJMultipleFailuresError;
 import org.example.junit5.tested.BuggyCalculatorTest;
+import org.example.junit5.tested.BuggyCalculatorWithMockParameterTest;
 import org.example.junit5.tested.BuggyCalculatorWithParameterTest;
 import org.example.junit5.tested.ValidCalculatorTest;
 import org.junit.jupiter.api.Test;
@@ -36,11 +37,17 @@ public class JUnit5SoftAssertionsTest {
             "but was not.\n" +
             "at BuggyCalculatorTest.test(BuggyCalculatorTest.java:" + FAILURE_2_LINE + ")";
 
-    private static final int THEORY_FAILURE_1_LINE = 27;
-    private static final String THEORY_FAILURE_1 = FAILURE_1.replace("BuggyCalculatorTest", "BuggyCalculatorWithParameterTest")
-            .replace(":" + FAILURE_1_LINE, ":" + THEORY_FAILURE_1_LINE);
-    private static final String THEORY_FAILURE_2 = FAILURE_2.replace("BuggyCalculatorTest", "BuggyCalculatorWithParameterTest")
-            .replace(":" + FAILURE_2_LINE, ":" + (THEORY_FAILURE_1_LINE + 1));
+    private static final int PARAMETER_FAILURE_1_LINE = 27;
+    private static final String PARAMETER_FAILURE_1 = FAILURE_1.replace("BuggyCalculatorTest", "BuggyCalculatorWithParameterTest")
+            .replace(":" + FAILURE_1_LINE, ":" + PARAMETER_FAILURE_1_LINE);
+    private static final String PARAMETER_FAILURE_2 = FAILURE_2.replace("BuggyCalculatorTest", "BuggyCalculatorWithParameterTest")
+            .replace(":" + FAILURE_2_LINE, ":" + (PARAMETER_FAILURE_1_LINE + 1));
+
+    private static final int MOCK_PARAMETER_FAILURE_1_LINE = 23;
+    private static final String MOCK_PARAMETER_FAILURE_1 = FAILURE_1.replace("BuggyCalculatorTest", "BuggyCalculatorWithMockParameterTest")
+            .replace(":" + FAILURE_1_LINE, ":" + MOCK_PARAMETER_FAILURE_1_LINE);
+    private static final String MOCK_PARAMETER_FAILURE_2 = FAILURE_2.replace("BuggyCalculatorTest", "BuggyCalculatorWithMockParameterTest")
+            .replace(":" + FAILURE_2_LINE, ":" + (MOCK_PARAMETER_FAILURE_1_LINE + 1));
 
     @Test
     public void testBuggyCalculatorTest(SoftAssertions softly) {
@@ -71,8 +78,25 @@ public class JUnit5SoftAssertionsTest {
             softly.assertThat(failure.getException())
                     .isExactlyInstanceOf(AssertJMultipleFailuresError.class)
                     .hasMessageContaining("Multiple Failures (2 failures)\n")
-                    .hasMessageContaining(THEORY_FAILURE_1)
-                    .hasMessageContaining(THEORY_FAILURE_2);
+                    .hasMessageContaining(PARAMETER_FAILURE_1)
+                    .hasMessageContaining(PARAMETER_FAILURE_2);
+        }
+    }
+
+    @Test
+    public void testBuggyCalculatorWithMockParameterTest(SoftAssertions softly) {
+        TestExecutionSummary result = runTest(BuggyCalculatorWithMockParameterTest.class);
+
+        softly.assertThat(result.getTestsFailedCount())
+                .overridingErrorMessage("There was %d errors instead of one:\n%s", result.getTestsFailedCount(), result.getFailures())
+                .isOne();
+        if (softly.wasSuccess()) {
+            Failure failure = result.getFailures().get(0);
+            softly.assertThat(failure.getException())
+                    .isExactlyInstanceOf(AssertJMultipleFailuresError.class)
+                    .hasMessageContaining("Multiple Failures (2 failures)\n")
+                    .hasMessageContaining(MOCK_PARAMETER_FAILURE_1)
+                    .hasMessageContaining(MOCK_PARAMETER_FAILURE_2);
         }
     }
 
