@@ -4,6 +4,7 @@ import org.assertj.core.api.AbstractSoftAssertions;
 import org.assertj.core.api.BDDSoftAssertions;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.assertj.core.util.VisibleForTesting;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -48,11 +49,13 @@ public class AssertJMockitoExtension extends SoftAssertionsExtension implements 
         return mockitoExtension.resolveParameter(parameterContext, extensionContext);
     }
 
-    private static class VerificationWrapper implements VerificationMode {
+    @VisibleForTesting
+    static class VerificationWrapper implements VerificationMode {
         private final VerificationMode delegate;
         private final ExtensionContext context;
 
-        private VerificationWrapper(VerificationMode delegate, ExtensionContext context) {
+        @VisibleForTesting
+        VerificationWrapper(VerificationMode delegate, ExtensionContext context) {
             this.delegate = delegate;
             this.context = context;
         }

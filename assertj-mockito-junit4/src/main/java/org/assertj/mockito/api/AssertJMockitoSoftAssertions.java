@@ -1,6 +1,7 @@
 package org.assertj.mockito.api;
 
 import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.util.VisibleForTesting;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.verification.api.VerificationData;
@@ -15,7 +16,7 @@ public class AssertJMockitoSoftAssertions extends JUnitSoftAssertions {
             @Override
             public void evaluate() throws Throwable {
                 try {
-                    mockingProgress().setVerificationStrategy(VerificationWrapper::new);
+                    mockingProgress().setVerificationStrategy(delegate -> new VerificationWrapper(AssertJMockitoSoftAssertions.this, delegate));
                     AssertJMockitoSoftAssertions.super.apply(base, description).evaluate();
                 } finally {
                     // If base.evaluate() throws an error, we must explicitly reset the VerificationStrategy
@@ -26,15 +27,19 @@ public class AssertJMockitoSoftAssertions extends JUnitSoftAssertions {
         };
     }
 
-    private class VerificationWrapper implements VerificationMode {
+    @VisibleForTesting
+    static class VerificationWrapper implements VerificationMode {
+        private final AssertJMockitoSoftAssertions assertJMockitoSoftAssertions;
         private final VerificationMode delegate;
 
-        private VerificationWrapper(VerificationMode delegate) {
+        @VisibleForTesting
+        VerificationWrapper(AssertJMockitoSoftAssertions assertJMockitoSoftAssertions, VerificationMode delegate) {
+            this.assertJMockitoSoftAssertions = assertJMockitoSoftAssertions;
             this.delegate = delegate;
         }
 
         public void verify(VerificationData data) {
-            check(() -> this.delegate.verify(data));
+            assertJMockitoSoftAssertions.check(() -> this.delegate.verify(data));
         }
 
         public VerificationMode description(String description) {
