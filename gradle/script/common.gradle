@@ -11,7 +11,7 @@ ext {
 }
 
 dependencies {
-    compile 'org.assertj:assertj-core:3.14.0'
+    compile 'org.assertj:assertj-core:3.16.0'
     compile 'org.mockito:mockito-core:3.1.0'
     compile 'org.opentest4j:opentest4j:1.2.0'
 }
