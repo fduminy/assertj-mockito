@@ -1,8 +1,10 @@
 package org.assertj.mockito.api;
 
-import org.assertj.core.api.AbstractSoftAssertions;
-import org.assertj.core.api.BDDSoftAssertions;
-import org.assertj.core.api.SoftAssertions;
+import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.create;
+import static org.mockito.internal.progress.MockingProgressImpl.getDefaultVerificationStrategy;
+import static org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress;
+
+import org.assertj.core.api.SoftAssertionsProvider;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.assertj.core.util.VisibleForTesting;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -13,10 +15,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import org.mockito.internal.verification.api.VerificationData;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
-
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.create;
-import static org.mockito.internal.progress.MockingProgressImpl.getDefaultVerificationStrategy;
-import static org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress;
 
 public class AssertJMockitoExtension extends SoftAssertionsExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
     private static final ExtensionContext.Namespace SOFT_ASSERTIONS_EXTENSION_NAMESPACE = create(SoftAssertionsExtension.class);
@@ -62,16 +60,15 @@ public class AssertJMockitoExtension extends SoftAssertionsExtension implements 
 
         @Override
         public void verify(VerificationData data) {
-            verify(context, SoftAssertions.class, data);
-            verify(context, BDDSoftAssertions.class, data);
+            verify(context, data);
         }
 
         public VerificationMode description(String description) {
             throw new IllegalStateException("Should not fail in this mode");
         }
 
-        private <T extends AbstractSoftAssertions> void verify(ExtensionContext context, Class<T> type, VerificationData data) {
-            T softly = context.getStore(SOFT_ASSERTIONS_EXTENSION_NAMESPACE).get(type, type);
+        private void verify(ExtensionContext context, VerificationData data) {
+            SoftAssertionsProvider softly = context.getStore(SOFT_ASSERTIONS_EXTENSION_NAMESPACE).get(SoftAssertionsProvider.class, SoftAssertionsProvider.class);
             if (softly != null) {
                 softly.check(() -> this.delegate.verify(data));
             }
